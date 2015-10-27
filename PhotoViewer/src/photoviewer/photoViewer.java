@@ -1,15 +1,14 @@
-/*
- * Sruthi Coimbatore Viswanathan
- * Advanced UI Programming
- * U-PSUD M2 HCI 2015
- * Reference: Java2s.com/Tutorial
- */
+///*
+// * Sruthi Coimbatore Viswanathan
+// * Advanced UI Programming
+// * U-PSUD M2 HCI 2015
+// * References: Java2s.com/Tutorial, Stack Overflow
+//*/
 package photoviewer;
 
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.JButton;
 import javax.swing.JLabel;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
@@ -26,6 +25,8 @@ import javax.swing.ButtonModel;
 import javax.swing.JFileChooser;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.SwingUtilities;
+
+
 
 public class photoViewer  extends JFrame
 {    
@@ -111,7 +112,11 @@ public class photoViewer  extends JFrame
         JPanel mainPanel = new JPanel(new BorderLayout()); 
       
       JPanel bPanel = new JPanel(new BorderLayout()); 
+      
       mainPanel.add(bPanel,BorderLayout.SOUTH);
+
+      
+      
       
       bPanel.add(status,BorderLayout.CENTER);
       
@@ -124,6 +129,7 @@ public class photoViewer  extends JFrame
       
         JPanel pPanel = new JPanel(); 
         mainPanel.add(pPanel,BorderLayout.NORTH);
+        
         
         
         JToggleButton home = new JToggleButton("Home");
@@ -204,21 +210,28 @@ public class photoViewer  extends JFrame
         vacation.addChangeListener(changeListener2);
         official.addChangeListener(changeListener3);
         recent.addChangeListener(changeListener4);
+        
+        
         return mainPanel;
     };
- 
+     
+    
+    
+      
+   
     public static void main(String[] args) 
     {
       SwingUtilities.invokeLater(() -> 
       {
       photoViewer frame = new photoViewer();
       
-      //frame.pack();
+      photoComponent pc = new photoComponent(30,30,10);
 
 
       frame.setVisible(true);
       frame.add(createMenuBar(), BorderLayout.PAGE_START); 
-      frame.add(createPanel(), BorderLayout.CENTER);
+      frame.add(createPanel(), BorderLayout.SOUTH);
+      frame.add(pc,BorderLayout.CENTER);
       frame.setSize(500, 500);
       frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
       
@@ -226,6 +239,7 @@ public class photoViewer  extends JFrame
         
       });
       
-    }
     
 }
+}
+    

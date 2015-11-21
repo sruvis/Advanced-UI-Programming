@@ -11,6 +11,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JToggleButton;
@@ -30,103 +31,28 @@ import javax.swing.SwingUtilities;
 
 public class photoViewer  extends JFrame
 {    
+    
     public static JLabel status = new JLabel("Welcome to PhotoViewer.");
 
 
     public photoViewer()
     {
-        //super();
-        //this.setUndecorated(true);
-        //this.setOpacity(0.80f);
-        // Center it on the screen
-       // this.setLocationRelativeTo(null);
-               
+                      
     }
     
-    private static JMenuBar createMenuBar()
-    {
-      JMenuBar menuBar = new JMenuBar(); 
     
-      JMenu fileMenu = new JMenu("File"); 
-      JMenu viewMenu = new JMenu("View"); 
-      menuBar.add(fileMenu); 
-      menuBar.add(viewMenu);
-
-     JMenuItem newMenuItem = new JMenuItem("Import"); 
-     newMenuItem.addActionListener(new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent event)
-            {
-                final JFileChooser f = new JFileChooser();
-                int file = f.showOpenDialog(null);
-            }
-        });
-     JMenuItem deleteMenuItem = new JMenuItem("Delete"); 
-     JMenuItem exitMenuItem = new JMenuItem("Quit");
-     exitMenuItem.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent event) {
-                System.exit(0);
-            }
-        });
-
-        fileMenu.add(newMenuItem); 
-        fileMenu.add(deleteMenuItem); 
-        fileMenu.addSeparator(); 
-        fileMenu.add(exitMenuItem);
-        
-        ButtonGroup viewGroup = new ButtonGroup();
-        JRadioButtonMenuItem viewRadio = new JRadioButtonMenuItem("Photo viewer");
-        viewRadio.setSelected(true);
-        viewGroup.add(viewRadio);
-        viewMenu.add(viewRadio);
-        viewRadio.addActionListener(new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent event)
-            {status.setText("Photo viewer view");}
-        });
-        JRadioButtonMenuItem browseRadio = new JRadioButtonMenuItem("Browser");
-        viewGroup.add(browseRadio);
-        viewMenu.add(browseRadio);
-        browseRadio.addActionListener(new ActionListener(){
-            @Override
-            public void actionPerformed(ActionEvent event)
-            {status.setText("Browser view");}
-        });
-        JRadioButtonMenuItem spiltRadio = new JRadioButtonMenuItem("Split");
-        viewGroup.add(spiltRadio);
-        viewMenu.add(spiltRadio);
-        spiltRadio.addActionListener(new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent event)
-            {status.setText("Split view");}
-        });
-        return menuBar;
-    };
     
     private static JPanel createPanel()
     {
         JPanel mainPanel = new JPanel(new BorderLayout()); 
       
-      JPanel bPanel = new JPanel(new BorderLayout()); 
+        JPanel bPanel = new JPanel(new BorderLayout()); 
       
-      mainPanel.add(bPanel,BorderLayout.SOUTH);
-
+        mainPanel.add(bPanel,BorderLayout.SOUTH);
+                
+        bPanel.add(status,BorderLayout.CENTER);
       
-      
-      
-      bPanel.add(status,BorderLayout.CENTER);
-      
-       //Button closeButton = new JButton("Close");
-      //bPanel.add(closeButton,BorderLayout.SOUTH);
-      //closeButton.addActionListener(e -> System.exit(0)); 
-      
-         
-      
-      
+              
         JPanel pPanel = new JPanel(); 
         mainPanel.add(pPanel,BorderLayout.NORTH);
         
@@ -143,9 +69,7 @@ public class photoViewer  extends JFrame
                 {
                 AbstractButton abstractButton = (AbstractButton) changeEvent.getSource();
                 ButtonModel buttonModel = abstractButton.getModel();
-                //boolean armed = buttonModel.isArmed();
-                //boolean pressed = buttonModel.isPressed();
-                boolean selected = buttonModel.isSelected();
+                 boolean selected = buttonModel.isSelected();
                  if (selected==true)
                  { status.setText("Home Mode is ON");}    
                 }
@@ -216,24 +140,97 @@ public class photoViewer  extends JFrame
     };
      
     
+    private static JMenuBar createMenuBar()
+    {
+      JMenuBar menuBar = new JMenuBar(); 
     
+      JMenu fileMenu = new JMenu("File"); 
+      JMenu viewMenu = new JMenu("View"); 
+      
+      
+      menuBar.add(fileMenu); 
+      menuBar.add(viewMenu);
+   
+      
+     
+     JMenuItem newMenuItem = new JMenuItem("Import"); 
+     newMenuItem.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent event)
+            {
+                final JFileChooser f = new JFileChooser();
+                int file = f.showOpenDialog(null);
+            }
+        });
+     JMenuItem deleteMenuItem = new JMenuItem("Delete"); 
+     JMenuItem exitMenuItem = new JMenuItem("Quit");
+     exitMenuItem.addActionListener(new ActionListener()
+     {
+            @Override
+            public void actionPerformed(ActionEvent event) 
+            {
+                System.exit(0);
+            }
+        });
+     
+     
+        fileMenu.add(newMenuItem); 
+        fileMenu.add(deleteMenuItem); 
+        fileMenu.addSeparator(); 
+        fileMenu.add(exitMenuItem);
+        
+    
+        
+        ButtonGroup viewGroup = new ButtonGroup();
+        JRadioButtonMenuItem viewRadio = new JRadioButtonMenuItem("Photo viewer");
+        viewRadio.setSelected(true);
+        viewGroup.add(viewRadio);
+        viewMenu.add(viewRadio);
+        viewRadio.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent event)
+            {status.setText("Photo viewer view");}
+        });
+        JRadioButtonMenuItem browseRadio = new JRadioButtonMenuItem("Browser");
+        viewGroup.add(browseRadio);
+        viewMenu.add(browseRadio);
+        browseRadio.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent event)
+            {status.setText("Browser view");}
+        });
+        JRadioButtonMenuItem spiltRadio = new JRadioButtonMenuItem("Split");
+        viewGroup.add(spiltRadio);
+        viewMenu.add(spiltRadio);
+        spiltRadio.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent event)
+            {status.setText("Split view");}
+        });
+        return menuBar;
+    };
       
    
     public static void main(String[] args) 
     {
+      // Run the GUI codes on the Event-Dispatching thread for thread safety
       SwingUtilities.invokeLater(() -> 
       {
-      photoViewer frame = new photoViewer();
+        photoViewer frame = new photoViewer();
       
-      photoComponent pc = new photoComponent(30,30,10);
-
-
+        photoComponent pc = new photoComponent(30,30,10);
+      
       frame.setVisible(true);
       frame.add(createMenuBar(), BorderLayout.PAGE_START); 
       frame.add(createPanel(), BorderLayout.SOUTH);
       frame.add(pc,BorderLayout.CENTER);
       frame.setSize(500, 500);
       frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
+      frame.setBackground(Color.BLACK);
       
 
         

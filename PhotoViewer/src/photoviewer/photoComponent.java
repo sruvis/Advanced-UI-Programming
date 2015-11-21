@@ -12,18 +12,16 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
-import java.awt.BasicStroke;
-import java.awt.Menu;
-import java.awt.MenuBar;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
-import javax.swing.JComboBox;
 import java.awt.BasicStroke;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.util.ArrayList;
+import java.awt.Point;
 
 
 
@@ -35,10 +33,19 @@ public class photoComponent extends JComponent
    Dimension size;
    Boolean picFlip = false;
    Boolean picNote = false;
+   Boolean picText = false;
+   Boolean picWrit = false;
   
-  private Image drawingBuffer;
-    Color color;
-    BasicStroke stroke;  
+  
+   private Image drawingBuffer;
+   Color color;
+   BasicStroke stroke;  
+    
+    private Point textPoint  = new Point();
+    private ArrayList<Character> textArray;
+    private boolean textWrit = false;
+    
+
    
    
     
@@ -53,15 +60,143 @@ public class photoComponent extends JComponent
         size.height = image.getHeight(null);
         setPreferredSize(size);
         
+        
         addDrawingController();
         color = Color.BLACK;
         stroke = new BasicStroke(1);
-      
-    
         
-        addMouseListener(new MouseAdapter()
-       {
-        @Override
+        addWritingController();
+        this.textArray = new ArrayList<>();
+        setFocusable(true);
+        
+        addFlipController();
+      
+    }
+    
+    public void paintComponent(Graphics g) 
+    {
+            super.paintComponent(g);
+            Graphics2D g2d = (Graphics2D) g;
+            
+            
+            if(picFlip)
+            {
+                   if (drawingBuffer == null) 
+                     {
+                       makeDrawingBuffer();
+                       
+                     }
+
+                     if(picNote)
+                    {
+                     
+                     try
+                     {
+                     g2d.drawImage(drawingBuffer, 0, 0, null);
+                      }
+                     finally
+                     {
+                     }
+                      
+                     } 
+                if(textWrit && !picWrit)
+                {
+                   
+                    g.setColor(Color.RED);
+                    char[] text = new char[textArray.size()];
+                    for(int i = 0; i<textArray.size(); i++)
+                    {
+                        text[i] = textArray.get(i);
+                    }
+                    g.drawChars(text, 0, text.length, 100, 100);
+                }
+                if(picWrit)
+                {
+                    
+                    g.setColor(Color.BLUE);
+                    g.drawLine(textPoint.x, textPoint.y, textPoint.x, textPoint.y-5);
+                    if(textWrit)
+                    {
+                        
+                        char[] text = new char[textArray.size()];
+                        for(int i = 0; i<textArray.size(); i++)
+                        {
+                            text[i] = textArray.get(i);
+                        }
+                        g.drawChars(text, 0, text.length, textPoint.x, textPoint.y);
+                        picText = true;
+                    }
+                }
+                }
+             
+            else
+            {
+                 g2d.drawImage(image, 3, 4, null);
+            }
+      
+ } 
+    public Image getImage()
+    {
+        return this.drawingBuffer;
+    }
+
+    public void setImage(Image newDrawingBuffer)
+    {
+        this.drawingBuffer = newDrawingBuffer;
+    }
+    
+    
+    private void makeDrawingBuffer() 
+    {
+        drawingBuffer = createImage(image.getWidth(null), image.getHeight(null));
+        fillWithWhite();
+    }
+
+    
+    private void fillWithWhite()
+    {
+        try 
+        {
+            final Graphics2D g = (Graphics2D) drawingBuffer.getGraphics();
+
+            g.setColor(Color.WHITE);
+            g.fillRect(0, 0, image.getWidth(null), image.getHeight(null));
+        }
+        finally
+        { }
+
+       
+        this.repaint();
+    }
+
+    
+    
+    private void drawLineSegment(int x1, int y1, int x2, int y2)
+    {
+        try
+        {
+            final Graphics2D g = (Graphics2D) drawingBuffer.getGraphics();
+            g.setColor(Color.BLACK);
+            g.drawLine(x1, y1, x2, y2);
+        }
+        finally 
+        {
+        }
+
+        this.repaint();
+    }
+    
+    private void addFlipController()
+    {
+        FlipController controller = new FlipController();
+        addMouseListener(controller);
+        
+    }
+
+    private class FlipController implements MouseListener
+    {
+               
+        
         public void mouseClicked(MouseEvent e)
         {
         if(e.getClickCount()==2)
@@ -76,6 +211,20 @@ public class photoComponent extends JComponent
                picFlip = false;
                repaint();
            }
+        }
+        else if(e.getClickCount()==1)
+        {
+            if(picFlip)
+            {
+               if(picWrit)
+                picWrit = false;
+                else{
+                     picWrit = true;
+                      textPoint = e.getPoint(); 
+                      }
+                            requestFocus();
+                            repaint();
+        }
         }
         
         }
@@ -98,131 +247,41 @@ public class photoComponent extends JComponent
             }
             
         }
+        
+        public void mouseEntered(MouseEvent e) 
+        {
+        }
+        public void mouseReleased(MouseEvent e)
+        {
+        }
+         public void mouseExited(MouseEvent e)
+        {
+        }
             
-       });
+       }
         
-        
-       
-    }
     
-    public void paintComponent(Graphics g) 
+    
+    private void addDrawingController() 
     {
-            super.paintComponent(g);
-            Graphics2D g2d = (Graphics2D) g;
-            
-            
-            if(picFlip)
-            {
-                   if (drawingBuffer == null) 
-                     {
-                     makeDrawingBuffer();
-                       }
-//                g2d.setColor(Color.WHITE);
-//           
-//                g2d.fillRect(0, 0, image.getWidth(null), image.getHeight(null));
-                //status.setText("Image Flipped: Photo Note");
-                if(picNote)
-                {
-                     // If this is the first time paintComponent() is being called,
-                     // make our drawing buffer.
-                     
-                     try
-                     {// Copy the drawing buffer to the screen.
-                     g2d.drawImage(drawingBuffer, 0, 0, null);
-                      } finally
-                     {
-                     }
-       
-       
-                }   
-                }
-             
-            else
-            {
-                 g2d.drawImage(image, 3, 4, null);
-            }
-      
- } 
-    public Image getImage() {
-        return this.drawingBuffer;
-    }
-
-    public void setImage(Image newDrawingBuffer) {
-        this.drawingBuffer = newDrawingBuffer;
-    }
-    
-    /*
-     * Make the drawing buffer and draw some starting content for it.
-     */
-    private void makeDrawingBuffer() {
-        drawingBuffer = createImage(image.getWidth(null), image.getHeight(null));
-        fillWithWhite();
-    }
-
-    /*
-     * Make the drawing buffer entirely white.
-     */
-    private void fillWithWhite() {
-        try {
-            final Graphics2D g = (Graphics2D) drawingBuffer.getGraphics();
-
-            g.setColor(Color.WHITE);
-            g.fillRect(0, 0, image.getWidth(null), image.getHeight(null));
-        } finally {
-        }
-
-        // IMPORTANT! every time we draw on the internal drawing buffer, we
-        // have to notify Swing to repaint this component on the screen.
-        this.repaint();
-    }
-
-    
-    /*
-     * Draw a line between two points (x1, y1) and (x2, y2), specified in
-     * pixels relative to the upper-left corner of the drawing buffer.
-     */
-    private void drawLineSegment(int x1, int y1, int x2, int y2) {
-        try {
-            final Graphics2D g = (Graphics2D) drawingBuffer.getGraphics();
-            g.setColor(Color.BLACK);
-            g.drawLine(x1, y1, x2, y2);
-        } finally {
-        }
-
-        this.repaint();
-    }
-
-    /*
-     * Add the mouse listener that supports the user's freehand drawing.
-     */
-    private void addDrawingController() {
         DrawingController controller = new DrawingController();
         addMouseListener(controller);
         addMouseMotionListener(controller);
     }
 
-    /*
-     * DrawingController handles the user's freehand drawing.
-     */
-    private class DrawingController implements MouseListener, MouseMotionListener {
-        // store the coordinates of the last mouse event, so we can
-        // draw a line segment from that last point to the point of the next
-        // mouse event.
+    
+    private class DrawingController implements MouseListener, MouseMotionListener
+    {
         private int lastX, lastY;
 
-        /*
-         * When mouse button is pressed down, start drawing.
-         */
-        public void mousePressed(MouseEvent e) {
+        public void mousePressed(MouseEvent e) 
+        {
             lastX = e.getX();
             lastY = e.getY();
         }
 
-        /*
-         * When mouse moves while a button is pressed down, draw a line
-         * segment.
-         */
-        public void mouseDragged(MouseEvent e) {
+        public void mouseDragged(MouseEvent e)
+        {
             int x = e.getX();
             int y = e.getY();
             drawLineSegment(lastX, lastY, x, y);
@@ -230,26 +289,62 @@ public class photoComponent extends JComponent
             lastY = y;
         }
 
-        // Ignore all these other mouse events.
-        public void mouseMoved(MouseEvent e) {
+       
+        public void mouseMoved(MouseEvent e) 
+        {
         }
 
-        public void mouseClicked(MouseEvent e) {
+        public void mouseClicked(MouseEvent e)
+        {
         }
 
-        public void mouseReleased(MouseEvent e) {
+        public void mouseReleased(MouseEvent e) 
+        {
         }
 
-        public void mouseEntered(MouseEvent e) {
+        public void mouseEntered(MouseEvent e)
+        {
         }
 
-        public void mouseExited(MouseEvent e) {
+        public void mouseExited(MouseEvent e)
+        {
         }
-    }
-
-    public void changeColorAndSize(Color newColor, BasicStroke basicStroke) {
-        color = newColor;
-        stroke = basicStroke;
     }
     
+     private void addWritingController() 
+     {
+        WritingController controller = new WritingController();
+        addKeyListener(controller);
+     }
+     
+     private class WritingController implements KeyListener 
+     {
+         
+                    public void keyTyped(KeyEvent e)
+                    {
+                        requestFocus();
+                        
+                        if((int)e.getKeyChar() == 8)
+                            textArray.remove(textArray.size()-1);
+                        else if((int)e.getKeyChar() == 27)
+                            picWrit = false;
+                        else{
+                            textArray.add(e.getKeyChar());
+                            textWrit = true;
+                        }
+                        repaint();
+                    }
+
+                    @Override
+                    public void keyPressed(KeyEvent e)
+                    {
+                    }
+
+                    @Override
+                    public void keyReleased(KeyEvent e)
+                    {                    
+                    }
+     
+     }
+
 }
